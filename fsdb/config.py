@@ -1,3 +1,13 @@
+from __future__ import unicode_literals
+from __future__ import print_function
+from __future__ import division
+from __future__ import absolute_import
+from builtins import open
+from builtins import int
+from builtins import oct
+from builtins import str, bytes
+from future import standard_library
+standard_library.install_aliases()
 import json
 
 CONFIG_SECTION = "fsdb"
@@ -18,7 +28,7 @@ def normalizeConf(oldConf):
 
     if 'mode' not in conf:
         conf['mode'] = DEFAULT_MODE
-    elif not isinstance(conf['mode'], basestring):
+    elif not isinstance(conf['mode'], str):
         raise TypeError(TAG+": `mode` must be a string")
 
     conf['mode'] = int(conf['mode'], 8)
@@ -32,7 +42,7 @@ def normalizeConf(oldConf):
 
     if 'hash_alg' not in conf:
         conf['hash_alg'] = DEFAULT_HASH_ALG
-    elif not isinstance(conf['hash_alg'], basestring):
+    elif not isinstance(conf['hash_alg'], str):
         raise TypeError(TAG+": `hash_alg` must be a string")
     elif conf['hash_alg'] not in ACCEPTED_HASH_ALG:
         raise ValueError(TAG+": `hash_alg` must be one of "+str(ACCEPTED_HASH_ALG))
@@ -41,8 +51,10 @@ def normalizeConf(oldConf):
 
 
 def loadConf(configPath):
-    with open(configPath, 'r') as configFile:
-        conf = json.load(configFile)
+    print(configPath)
+    with open(configPath, 'r', encoding='utf-8') as configFile:
+        content = configFile.read()
+        conf = json.loads(content)
 
     return normalizeConf(conf)
 
@@ -56,8 +68,11 @@ def writeConf(configPath, conf):
     if 'mode' in mConf:
         mConf['mode'] = str(oct(mConf['mode']))
 
-    with open(configPath, 'w') as outfile:
-        json.dump(mConf, outfile, indent=4)
+    json_content = json.dumps(mConf, indent=4)
+    if isinstance(json_content, bytes):
+        json_content = json_content.decode('utf-8')
+    with open(configPath, 'w', encoding='utf-8') as outfile:
+        outfile.write(json_content)
 
 
 def getDefaultConf():

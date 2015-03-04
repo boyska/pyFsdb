@@ -1,6 +1,13 @@
 #!/usr/bin/env python
-# -*- coding: utf-8 -*- 
+# -*- coding: utf-8 -*-
 
+from __future__ import unicode_literals
+from __future__ import print_function
+from __future__ import division
+from __future__ import absolute_import
+from builtins import open, range, str
+from future import standard_library
+standard_library.install_aliases()
 import unittest
 import os
 import random
@@ -11,11 +18,11 @@ import tempfile
 from fsdb import Fsdb
 
 class FsdbTestFunction(unittest.TestCase):
-    
+
     def setUp(self):
         self.fsdb_tmp_path = tempfile.mkdtemp(prefix="fsdb_test")
         self.fsdb = Fsdb(os.path.join(self.fsdb_tmp_path, "fsdbRoot"))
-    
+
     def tearDown(self):
         shutil.rmtree(self.fsdb_tmp_path)
 
@@ -41,7 +48,7 @@ class FsdbTestFunction(unittest.TestCase):
     def test_get_file_path(self):
         testFilePath = self.createTestFile()
         digest = self.fsdb.add(testFilePath)
-        self.assertIsInstance(self.fsdb.get_file_path(digest),basestring)
+        self.assertIsInstance(self.fsdb.get_file_path(digest), str)
         self.assertTrue(os.path.isabs(self.fsdb.get_file_path(digest)))
 
     def test_same_file_after_retrieval(self):
@@ -49,12 +56,12 @@ class FsdbTestFunction(unittest.TestCase):
         digest = self.fsdb.add(testFilePath)
         storedFilePath = self.fsdb.get_file_path(digest)
         self.assertTrue( filecmp.cmp(testFilePath, storedFilePath, shallow=False) )
-        
+
     def test_remove_existing_file(self):
         testFilePath = self.createTestFile()
         digest = self.fsdb.add(testFilePath)
         self.fsdb.remove(digest)
-        
+
     def test_remove_not_existing_file(self):
         with self.assertRaisesRegexp(OSError,"No such file or directory"):
             self.fsdb.remove(randomID(20))
@@ -110,7 +117,7 @@ class FsdbTestFunction(unittest.TestCase):
         for _ in range(num):
             self.fsdb.add(self.createTestFile())
         self.assertEqual(len(self.fsdb), num)
-    
+
     def test_len_empty(self):
         self.assertEqual(len(self.fsdb), 0)
 

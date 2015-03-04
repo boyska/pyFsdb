@@ -12,6 +12,9 @@ setup(
     url = "https://github.com/ael-code/pyFsdb",
     license = "LGPLv3",
     test_suite='tests',
+    install_requires=[
+        'future'
+    ],
     classifiers=[
         "Development Status :: 3 - Alpha",
         "License :: OSI Approved :: GNU Lesser General Public License v3 (LGPLv3)",

@@ -1,5 +1,12 @@
 # -*- coding: utf-8 -*-
 
+from __future__ import unicode_literals
+from __future__ import print_function
+from __future__ import division
+from __future__ import absolute_import
+from builtins import range, open, str, dict, oct
+from future import standard_library
+standard_library.install_aliases()
 import os
 import errno
 import stat
@@ -7,8 +14,8 @@ import unicodedata
 import hashlib
 import shutil
 import logging
-import string
-import config
+
+from . import config
 
 
 class Fsdb(object):
@@ -49,7 +56,7 @@ class Fsdb(object):
             raise Exception("fsdb can not operate on relative path")
 
         # on different platforms same unicode string could have different rappresentation
-        if isinstance(fsdbRoot, unicode):
+        if isinstance(fsdbRoot, str):
             fsdbRoot = unicodedata.normalize("NFC", fsdbRoot)
 
         configPath = os.path.join(fsdbRoot, Fsdb.CONFIG_FILE)
@@ -103,7 +110,7 @@ class Fsdb(object):
             oldmask = os.umask(0)
             os.makedirs(path, self._conf['mode'])
             os.umask(oldmask)
-        except OSError, e:
+        except OSError as e:
             if(e.errno == errno.EACCES):
                 raise Exception("not sufficent permissions to write on fsdb folder: \""+path+'\"')
             elif(e.errno == errno.EEXIST):
@@ -219,10 +226,10 @@ class Fsdb(object):
         for dirpath, dirnames, filenames in os.walk(self.fsdbRoot):
             rel_dirpath = os.path.relpath(dirpath,self.fsdbRoot)
             # rel_dirpath does not have os.sep neither on front nor at the end. Ex uno/due/tre
-            if (string.count(rel_dirpath, os.sep) + 1 ) != self._conf['deep']:
+            if (rel_dirpath.count(os.sep) + 1) != self._conf['deep']:
                 continue
             for f in filenames:
-                yield string.replace(rel_dirpath+f, os.sep, "")
+                yield (rel_dirpath+f).replace(os.sep, "")
 
     def __str__(self):
         return "{root: " + self.fsdbRoot + \
@@ -243,8 +250,9 @@ class Fsdb(object):
 
     def __getitem__(self, digest):
         """return the file path of the stored file with the given digest"""
-        if not isinstance(digest, basestring):
-            raise TypeError("key must be instance of basestring")
+        if not isinstance(digest, str):
+            raise TypeError("key must be a string, not {}"
+                            .format(type(digest)))
         if not self.exists(digest):
             raise KeyError("no stored file found for '{}'".format(digest))
         return self.get_file_path(digest)
@@ -272,10 +280,10 @@ class Fsdb(object):
             raise ValueError('"' + algorithm + '" it is not a supported algorithm function')
 
         hashM = algFunct()
-        with open(filepath, 'r') as f:
+        with open(filepath, 'rb') as f:
             data = f.read(block_size)
             hashM.update(data)
-        return hashM.hexdigest()
+        return str(hashM.hexdigest())
 
     @staticmethod
     def generate_tree_path(fileDigest, deep):
@@ -312,7 +320,7 @@ class Fsdb(object):
         path = os.path.join(fsdbRoot, Fsdb.CONFIG_FILE)
         try:
             os.stat(path)
-        except OSError, e:
+        except OSError as e:
             if(e.errno == errno.EACCES):
                 raise Exception("not sufficent permissions to stat fsdb config file: \""+path+'\"')
             elif(e.errno == errno.ENOENT):

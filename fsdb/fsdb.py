@@ -173,6 +173,7 @@ class Fsdb(object):
 
     def exists(self, digest):
         """Check file existence in fsdb
+
           Returns:
             True if file exists under this instance of fsdb, false otherwise
         """
@@ -180,6 +181,7 @@ class Fsdb(object):
 
     def get_file_path(self, digest):
         """Retrieve the absolute path to the file with the given digest
+
           Args:
             digest -- digest of the file
           Returns:
@@ -190,6 +192,7 @@ class Fsdb(object):
 
     def check(self, digest):
         """Check the integrity of the file with the given digest
+
           Args:
             digest -- digest of the file to check
           Returns:
@@ -249,6 +252,7 @@ class Fsdb(object):
     @staticmethod
     def file_digest(filepath, algorithm="sha1", block_size=2**20):
         """Calculate digest of the file located at @filepath
+
          Args:
             digest -- digest of the file to remove
         """
@@ -277,6 +281,7 @@ class Fsdb(object):
     def generate_tree_path(fileDigest, deep):
         """Generate a relative path from the given fileDigest
             relative path has a numbers of directories levels according to @deep
+
          Args:
             fileDigest -- digest for which the relative path will be generate
             deep -- number of levels to use in relative path generation

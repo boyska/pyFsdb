@@ -122,6 +122,24 @@ class FsdbTestFunction(unittest.TestCase):
         digest = self.fsdb.add(self.createTestFile())
         self.assertIn(digest, self.fsdb)
 
+    def test_get_item(self):
+        fpath = self.createTestFile()
+        digest = self.fsdb.add(fpath)
+        self.assertTrue(filecmp.cmp(fpath, self.fsdb[digest], shallow=False))
+
+    def test_get_item_type_error(self):
+        with self.assertRaises(TypeError):
+            self.fsdb[3]
+        with self.assertRaises(TypeError):
+            self.fsdb[list()]
+
+    def test_get_item_key_error(self):
+        fpath = self.createTestFile()
+        digest = self.fsdb._calc_digest(fpath)
+        with self.assertRaises(KeyError):
+            self.fsdb[digest]
+
+
 class FsdbTestConfig(unittest.TestCase):
 
     def setUp(self):

@@ -238,6 +238,14 @@ class Fsdb(object):
     def __contains__(self, digest):
         return self.exists(digest)
 
+    def __getitem__(self, digest):
+        """return the file path of the stored file with the given digest"""
+        if not isinstance(digest, basestring):
+            raise TypeError("key must be instance of basestring")
+        if not self.exists(digest):
+            raise KeyError("no stored file found for '{}'".format(digest))
+        return self.get_file_path(digest)
+
     @staticmethod
     def file_digest(filepath, algorithm="sha1", block_size=2**20):
         """Calculate digest of the file located at @filepath
